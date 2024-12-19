@@ -280,39 +280,65 @@ def run_extensions_installers(settings_file):
 re_requirement = re.compile(r"\s*([-_a-zA-Z0-9]+)\s*(?:==\s*([-+_.a-zA-Z0-9]+))?\s*")
 
 
+import re
+
 def requirements_met(requirements_file):
     """
-    Does a simple parse of a requirements.txt file to determine if all rerqirements in it
+    Does a simple parse of a requirements.txt file to determine if all requirements in it
     are already installed. Returns True if so, False if not installed or parsing fails.
     """
 
     import importlib.metadata
     import packaging.version
 
-    with open(requirements_file, "r", encoding="utf8") as file:
-        for line in file:
-            if line.strip() == "":
-                continue
+    print(f"Checking requirements from file: {requirements_file}")
 
-            m = re.match(re_requirement, line)
-            if m is None:
-                return False
+    try:
+        with open(requirements_file, "r", encoding="utf8") as file:
+            for line_number, line in enumerate(file, start=1):
+                # Skip empty lines
+                if line.strip() == "":
+                    print(f"Skipping empty line at {line_number}")
+                    continue
 
-            package = m.group(1).strip()
-            version_required = (m.group(2) or "").strip()
+                # Match requirement pattern
+                m = re.match(r"^([\w\-\_]+)(?:==([\d\.]+))?$", line)
+                if m is None:
+                    print(f"Failed to parse line {line_number}: {line.strip()}")
+                    return False
 
-            if version_required == "":
-                continue
+                package = m.group(1).strip()
+                version_required = (m.group(2) or "").strip()
 
-            try:
-                version_installed = importlib.metadata.version(package)
-            except Exception:
-                return False
+                if version_required == "":
+                    print(f"Skipping package {package} with no version specified at line {line_number}")
+                    continue
 
-            if packaging.version.parse(version_required) != packaging.version.parse(version_installed):
-                return False
+                try:
+                    version_installed = importlib.metadata.version(package)
+                except Exception as e:
+                    print(f"Failed to get installed version for {package} at line {line_number}: {e}")
+                    return False
 
+                if packaging.version.parse(version_required) != packaging.version.parse(version_installed):
+                    print(
+                        f"Version mismatch for {package} at line {line_number}: "
+                        f"required {version_required}, installed {version_installed}"
+                    )
+                    return False
+
+                print(f"Requirement satisfied for {package}: {version_installed} == {version_required}")
+
+    except FileNotFoundError:
+        print(f"Requirements file not found: {requirements_file}")
+        return False
+    except Exception as e:
+        print(f"Unexpected error while checking requirements: {e}")
+        return False
+
+    print("All requirements are satisfied.")
     return True
+
 
 
 def prepare_environment():

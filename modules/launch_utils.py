@@ -279,9 +279,6 @@ def run_extensions_installers(settings_file):
 
 re_requirement = re.compile(r"\s*([-_a-zA-Z0-9]+)\s*(?:==\s*([-+_.a-zA-Z0-9]+))?\s*")
 
-
-import re
-
 def requirements_met(requirements_file):
     """
     Does a simple parse of a requirements.txt file to determine if all requirements in it

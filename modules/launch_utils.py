@@ -288,52 +288,52 @@ def requirements_met(requirements_file):
     import importlib.metadata
     import packaging.version
 
-    print(f"Checking requirements from file: {requirements_file}")
+    print(f"NICK: Checking requirements from file: {requirements_file}")
 
     try:
         with open(requirements_file, "r", encoding="utf8") as file:
             for line_number, line in enumerate(file, start=1):
                 # Skip empty lines
                 if line.strip() == "":
-                    print(f"Skipping empty line at {line_number}")
+                    print(f"NICK:Skipping empty line at {line_number}")
                     continue
 
                 # Match requirement pattern
                 m = re.match(r"^([\w\-\_]+)(?:==([\d\.]+))?$", line)
                 if m is None:
-                    print(f"Failed to parse line {line_number}: {line.strip()}")
+                    print(f"NICK:Failed to parse line {line_number}: {line.strip()}")
                     return False
 
                 package = m.group(1).strip()
                 version_required = (m.group(2) or "").strip()
 
                 if version_required == "":
-                    print(f"Skipping package {package} with no version specified at line {line_number}")
+                    print(f"NICK:Skipping package {package} with no version specified at line {line_number}")
                     continue
 
                 try:
                     version_installed = importlib.metadata.version(package)
                 except Exception as e:
-                    print(f"Failed to get installed version for {package} at line {line_number}: {e}")
+                    print(f"NICK:Failed to get installed version for {package} at line {line_number}: {e}")
                     return False
 
                 if packaging.version.parse(version_required) != packaging.version.parse(version_installed):
                     print(
-                        f"Version mismatch for {package} at line {line_number}: "
+                        f"NICK:Version mismatch for {package} at line {line_number}: "
                         f"required {version_required}, installed {version_installed}"
                     )
                     return False
 
-                print(f"Requirement satisfied for {package}: {version_installed} == {version_required}")
+                print(f"NICK:Requirement satisfied for {package}: {version_installed} == {version_required}")
 
     except FileNotFoundError:
-        print(f"Requirements file not found: {requirements_file}")
+        print(f"NICK:Requirements file not found: {requirements_file}")
         return False
     except Exception as e:
-        print(f"Unexpected error while checking requirements: {e}")
+        print(f"NICK:Unexpected error while checking requirements: {e}")
         return False
 
-    print("All requirements are satisfied.")
+    print("NICK:All requirements are satisfied.")
     return True
 
 

@@ -391,18 +391,22 @@ def prepare_environment():
     startup_timer.record("torch GPU test")
 
     if not is_installed("clip"):
+        print("NICK INSTALL CLIP")
         run_pip(f"install {clip_package}", "clip")
         startup_timer.record("install clip")
 
     if not is_installed("open_clip"):
+        print("NICK INSTALL OPEN_CLIP")
         run_pip(f"install {openclip_package}", "open_clip")
         startup_timer.record("install open_clip")
 
     if (not is_installed("xformers") or args.reinstall_xformers) and args.xformers:
+        print("NICK INSTALL XFORMERS")
         run_pip(f"install -U -I --no-deps {xformers_package}", "xformers")
         startup_timer.record("install xformers")
 
     if not is_installed("ngrok") and args.ngrok:
+        print("NICK INSTALL NGROK")
         run_pip("install ngrok", "ngrok")
         startup_timer.record("install ngrok")
 
@@ -420,6 +424,7 @@ def prepare_environment():
         requirements_file = os.path.join(script_path, requirements_file)
 
     if not requirements_met(requirements_file):
+        print("NICK INSTALL REQUIREMENTS_MET")
         run_pip(f"install -r \"{requirements_file}\"", "requirements")
         startup_timer.record("install requirements")
 
@@ -427,6 +432,7 @@ def prepare_environment():
         requirements_file_for_npu = os.path.join(script_path, requirements_file_for_npu)
 
     if "torch_npu" in torch_command and not requirements_met(requirements_file_for_npu):
+        print("NICK INSTALL TORCH_NPU")
         run_pip(f"install -r \"{requirements_file_for_npu}\"", "requirements_for_npu")
         startup_timer.record("install requirements_for_npu")
 
